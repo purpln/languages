@@ -11,7 +11,6 @@ public class Languages {
     
     private func read(_ language: String) -> Data? {
         let path = directory.appendingPathComponent("localization/" + language + ".json")
-        print(exists("localization/" + language + ".json"))
         return try? Data(contentsOf: path)
     }
     
@@ -33,7 +32,7 @@ public class Languages {
     }
     
     init() {
-        if languages == nil { guard folder("localization") else { return } }
+        if languages == nil { _ = folder("localization") }
         print("log: app langugaes updated:", update.joined(separator: ", "))
     }
     
