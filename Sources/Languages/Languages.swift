@@ -9,39 +9,41 @@ public class Languages {
         return string
     }
     
-    public var languages: [String]? {
-        guard let languages = files("languages") else { return nil }
-        return languages.map { $0.replacingOccurrences(of: ".json", with: "")}
-    }
-    
     private func read(_ language: String) -> Data? {
-        let path = directory.appendingPathComponent("languages/" + language + ".json")
+        let path = directory.appendingPathComponent("localization/" + language + ".json")
         return try? Data(contentsOf: path)
     }
     
-    private var update: String {
+    public var languages: [String]? {
+        guard let languages = files("localization") else { return nil }
+        return languages.map { $0.replacingOccurrences(of: ".json", with: "")}
+    }
+    
+    private var update: [String] {
         var updated: [String] = []
-        let languages: [String] = ["en", "ru"]
-        for language in languages {
+        for language in available {
             guard let path = Bundle.main.path(forResource: language, ofType: "json"),
-                  let data = try? Data(contentsOf: URL(fileURLWithPath: path)), let _ = data.dict,
-                  rewrite("languages/" + language + ".json", data) else { continue }
+                  let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+                  let _ = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  rewrite("localization/" + language + ".json", data) else { continue }
             updated.append(language)
         }
-        return "updated languages: " + updated.joined(separator: ", ")
+        return updated
     }
     
     init() {
-        if languages == nil { guard folder("languages") else { return } }
+        if languages == nil { guard folder("localization") else { return } }
         print(update)
     }
+    
+    var available: [String] = ["en", "ru"]
 }
 
-extension Languages {
-    private var manager: FileManager { .default }
-    public var directory: URL { manager.urls(for: .documentDirectory, in: .userDomainMask).first! }
+private extension Languages {
+    var manager: FileManager { .default }
+    var directory: URL { manager.urls(for: .documentDirectory, in: .userDomainMask).first! }
     
-    private func rewrite(_ path: String, _ data: Data?) -> Bool {
+    func rewrite(_ path: String, _ data: Data?) -> Bool {
         guard let data = data else { return false }
         if exists(path) {
             if remove(path) {
@@ -52,7 +54,7 @@ extension Languages {
         }
         return true
     }
-    private func remove(_ path: String) -> Bool {
+    func remove(_ path: String) -> Bool {
         if path != "" {
             guard let _ = try? manager.removeItem(at: url(path)) else { return true }
         } else {
@@ -64,18 +66,18 @@ extension Languages {
         }
         return true
     }
-    private func exists(_ file: String) -> Bool {
+    func exists(_ file: String) -> Bool {
         manager.fileExists(atPath: url(file).path)
     }
-    private func files(_ folder: String = "") -> Array<String>? {
+    func files(_ folder: String = "") -> Array<String>? {
         try? manager.contentsOfDirectory(atPath: url(folder).path)
     }
-    private func folder(_ folder: String) -> Bool {
+    func folder(_ folder: String) -> Bool {
         guard !exists(folder) else { return false }
         guard let _ = try? manager.createDirectory(atPath: url(folder).path, withIntermediateDirectories: true) else { return true }
         return false
     }
-    private func url(_ path: String) -> URL {
+    func url(_ path: String) -> URL {
         directory.appendingPathComponent(path)
     }
 }
