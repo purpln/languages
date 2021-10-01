@@ -42,9 +42,7 @@ public class Languages {
         guard let dictionary = read(Languages.current)?.dict as? [String: String] else { fatalError() }
         Languages.dictionary = dictionary
     }
-}
-
-public extension Languages {
+    
     class var available: [String] { ["en", "ru"] }
     class var current: String { "en" }
     static var languages: [String]? { shared.languages }
