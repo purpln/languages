@@ -35,7 +35,6 @@ public class Languages {
     }
     
     public func changed() {
-        print("changed")
         guard let dictionary = data?.dict else { return }
         self.dictionary = dictionary
     }
@@ -52,7 +51,7 @@ public class Languages {
     
     public var available: [String] { ["en", "ru"] }
     public var current: String {
-        guard let language = Bundle.main.preferredLocalizations.first,
+        guard let language = Bundle.preferredLocalizations(from: available).first,
               let languages = languages,
               languages.contains(language) else { return "en" }
         return language
