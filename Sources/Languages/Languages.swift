@@ -1,12 +1,12 @@
 import Foundation
 
 public class Languages {
-    static var shared: Languages = Languages()
+    public static var shared: Languages = Languages()
     
     public static var dictionary: [String: String] = [:]
     
-    public static func localize(key: String) -> String {
-        guard let string = dictionary[key] else { return key }
+    public func localize(key: String) -> String {
+        guard let string = Languages.dictionary[key] else { return key }
         return string
     }
     
@@ -15,7 +15,7 @@ public class Languages {
         return try? Data(contentsOf: path)
     }
     
-    public var languages: [String]? {
+    private var languages: [String]? {
         guard let languages = files("localization") else { return nil }
         return languages.map { $0.replacingOccurrences(of: ".json", with: "")}
     }
@@ -47,7 +47,7 @@ public class Languages {
 extension Languages {
     open class var available: [String] { ["en", "ru"] }
     open class var current: String { "en" }
-    static var languages: [String]? { shared.languages }
+    public static var languages: [String]? { shared.languages }
 }
 
 private extension Languages {
