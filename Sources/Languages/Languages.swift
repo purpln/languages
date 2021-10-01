@@ -35,8 +35,11 @@ public class Languages {
     
     init?() {
         if languages == nil { guard Files.folder("localization") else { return nil } }
+        print("created folder")
         if languages?.count == 0 { update() }
+        print("created files")
         guard let dictionary = data?.dict else { return nil }
+        print("created dictionary")
         self.dictionary = dictionary
     }
     
