@@ -3,14 +3,14 @@ import Foundation
 public class Languages {
     public static var shared: Languages? = Languages()
     
-    public static var dictionary: [String: String] = [:]
+    public var dictionary: [String: String] = [:]
     
     public func localize(key: String) -> String {
-        guard let string = Self.dictionary[key] else { return key }
+        guard let string = dictionary[key] else { return key }
         return string
     }
     
-    private var languages: [String]? {
+    public var languages: [String]? {
         guard let languages = Files.files("localization") else { return nil }
         return languages.map { $0.replacingOccurrences(of: ".json", with: "")}
     }
@@ -36,8 +36,9 @@ public class Languages {
     init?() {
         if languages == nil { guard Files.folder("localization") else { return nil } }
         if languages?.count == 0 { Languages.update() }
-        guard let dictionary = Languages.data?.dict as? [String: String] else { return nil }
-        Languages.dictionary = dictionary
+        print(languages, Languages.data?.dict)
+        guard let dictionary = Languages.data?.dict else { return nil }
+        self.dictionary = dictionary
     }
     
     public static var languages: [String]? { shared?.languages }
@@ -51,5 +52,5 @@ public class Languages {
 }
 
 private extension Data {
-    var dict: [String: Any]? { try? JSONSerialization.jsonObject(with: self) as? [String: Any] }
+    var dict: [String: String]? { try? JSONSerialization.jsonObject(with: self) as? [String: String] }
 }
