@@ -44,9 +44,6 @@ public class Languages {
         if languages?.count == 0 { update() }
         guard let dictionary = data?.dict else { return nil }
         self.dictionary = dictionary
-        NotificationCenter.default.addObserver(forName: NSLocale.currentLocaleDidChangeNotification, object: nil, queue: nil) { [weak self] _ in
-            self?.changed()
-        }
     }
     
     public var available: [String] { ["en", "ru"] }
@@ -56,8 +53,6 @@ public class Languages {
               languages.contains(language) else { return "en" }
         return language
     }
-    
-    deinit { NotificationCenter.default.removeObserver(self) }
 }
 
 private extension Data {
