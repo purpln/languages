@@ -3,9 +3,10 @@ import Foundation
 public class Languages {
     static var shared: Languages = Languages()
     
+    public static var dictionary: [String: String] = [:]
+    
     public static func localize(key: String, language: String) -> String {
-        guard let dictionary = Languages.shared.read(language)?.dict,
-              let string = dictionary[key] as? String else { return key }
+        guard let string = dictionary[key] else { return key }
         return string
     }
     
@@ -19,24 +20,33 @@ public class Languages {
         return languages.map { $0.replacingOccurrences(of: ".json", with: "")}
     }
     
-    private var update: [String] {
+    @discardableResult
+    public static func update() -> [String] {
         var updated: [String] = []
+        print(available)
         for language in available {
             guard let path = Bundle.main.path(forResource: language, ofType: "json"),
                   let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
                   let _ = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  rewrite("localization/" + language + ".json", data) else { continue }
+                  shared.rewrite("localization/" + language + ".json", data) else { continue }
             updated.append(language)
         }
         return updated
     }
     
     init() {
-        if languages == nil { _ = folder("localization") }
-        print("log: app langugaes updated:", update.joined(separator: ", "))
+        if languages == nil { _ = folder("localization"); print("folder localization created") }
+        if languages?.count == 0 { let languages = Languages.update();
+            print("languages (\(languages.joined(separator: ", "))) created") }
+        print("available languages: ", languages?.joined(separator: ", ") ?? "nil")
+        guard let dictionary = read(Languages.current)?.dict as? [String: String] else { fatalError() }
+        Languages.dictionary = dictionary
     }
-    
-    var available: [String] = ["en", "ru"]
+}
+
+extension Languages {
+    open class var available: [String] { ["en", "ru"] }
+    open class var current: String { "en" }
 }
 
 private extension Languages {
