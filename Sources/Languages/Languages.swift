@@ -36,7 +36,7 @@ public class Languages {
     init?() {
         if languages == nil { guard Files.folder("localization") else { return nil } }
         if languages?.count == 0 { Languages.update() }
-        guard let dictionary = Languages.data?.dict as? [String: String] else { fatalError() }
+        guard let dictionary = Languages.data?.dict as? [String: String] else { return nil }
         Languages.dictionary = dictionary
     }
     
