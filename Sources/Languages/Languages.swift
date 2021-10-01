@@ -5,7 +5,7 @@ public class Languages {
     
     public static var dictionary: [String: String] = [:]
     
-    public static func localize(key: String, language: String) -> String {
+    public static func localize(key: String) -> String {
         guard let string = dictionary[key] else { return key }
         return string
     }
@@ -47,6 +47,7 @@ public class Languages {
 extension Languages {
     open class var available: [String] { ["en", "ru"] }
     open class var current: String { "en" }
+    static var languages: [String]? { shared.languages }
 }
 
 private extension Languages {
