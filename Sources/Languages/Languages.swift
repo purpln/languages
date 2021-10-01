@@ -23,12 +23,13 @@ public class Languages {
     @discardableResult
     public func update() -> [String] {
         var updated: [String] = []
-        for language in available {
-            guard let path = Bundle.main.path(forResource: language, ofType: "json"),
-                  let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-                  let _ = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  Files.rewrite("localization/" + language + ".json", data) else { continue }
-            updated.append(language)
+        available.parallel { language in
+            if let path = Bundle.main.path(forResource: language, ofType: "json"),
+               let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+               let _ = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               Files.rewrite("localization/" + language + ".json", data) {
+                updated.append(language)
+            }
         }
         return updated
     }
@@ -54,4 +55,10 @@ public class Languages {
 
 private extension Data {
     var dict: [String: String]? { try? JSONSerialization.jsonObject(with: self) as? [String: String] }
+}
+
+private extension Array {
+    func parallel(body: (Element) -> Void) {
+        DispatchQueue.concurrentPerform(iterations: count) { body(self[$0]) }
+    }
 }
