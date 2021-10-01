@@ -1,7 +1,7 @@
 import Foundation
 
 public class Languages {
-    public static var shared: Languages = Languages()
+    public static var shared: Languages? = Languages()
     
     public static var dictionary: [String: String] = [:]
     
@@ -28,23 +28,24 @@ public class Languages {
             guard let path = Bundle.main.path(forResource: language, ofType: "json"),
                   let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
                   let _ = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let shared = shared,
                   shared.rewrite("localization/" + language + ".json", data) else { continue }
             updated.append(language)
         }
         return updated
     }
     
-    init() {
-        if languages == nil { guard folder("localization") else { fatalError() } }
+    init?() {
+        if languages == nil { guard folder("localization") else { print("return nil");return nil } }
         if languages?.count == 0 { let languages = Languages.update();
             print("languages (\(languages.joined(separator: ", "))) created") }
         print("available languages: ", languages?.joined(separator: ", ") ?? "nil")
         print(Self.current, read(Self.current)?.dict)
-        guard let dictionary = read(Self.current)?.dict as? [String: String] else { fatalError() }
-        Languages.dictionary = dictionary
+        //guard let dictionary = read(Self.current)?.dict as? [String: String] else { fatalError() }
+        //Languages.dictionary = dictionary
     }
     
-    public static var languages: [String]? { shared.languages }
+    public static var languages: [String]? { shared?.languages }
     public static var available: [String] { ["en", "ru"] }
     public static var current: String {
         guard let language = Bundle.main.preferredLocalizations.first,
