@@ -6,7 +6,7 @@ public class Languages {
     public static var dictionary: [String: String] = [:]
     
     public func localize(key: String) -> String {
-        guard let string = Languages.dictionary[key] else { return key }
+        guard let string = Self.dictionary[key] else { return key }
         return string
     }
     
@@ -35,17 +35,22 @@ public class Languages {
     }
     
     init() {
-        if languages == nil { _ = folder("localization"); print("folder localization created") }
+        if languages == nil { guard folder("localization") else { fatalError() } }
         if languages?.count == 0 { let languages = Languages.update();
             print("languages (\(languages.joined(separator: ", "))) created") }
         print("available languages: ", languages?.joined(separator: ", ") ?? "nil")
-        guard let dictionary = read(Languages.current)?.dict as? [String: String] else { fatalError() }
+        guard let dictionary = read(Self.current)?.dict as? [String: String] else { fatalError() }
         Languages.dictionary = dictionary
     }
     
-    class var available: [String] { ["en", "ru"] }
-    class var current: String { "en" }
-    static var languages: [String]? { shared.languages }
+    public static var languages: [String]? { shared.languages }
+    public static var available: [String] { ["en", "ru"] }
+    public static var current: String {
+        guard let language = Bundle.main.preferredLocalizations.first,
+              let languages = languages,
+              languages.contains(language) else { return "en" }
+        return language
+    }
 }
 
 private extension Languages {
