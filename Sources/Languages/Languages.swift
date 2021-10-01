@@ -34,8 +34,9 @@ public class Languages {
         return updated
     }
     
-    public func changed() {
-        guard let dictionary = data?.dict else { return }
+    public func changed(_ string: String) {
+        let path = Files.directory.appendingPathComponent("localization/" + string + ".json")
+        guard let data = try? Data(contentsOf: path), let dictionary = data.dict else { return }
         self.dictionary = dictionary
     }
     
