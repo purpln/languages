@@ -10,20 +10,19 @@ public class Languages {
         return string
     }
     
-    private func read(_ language: String) -> Data? {
-        let path = Files.directory.appendingPathComponent("localization/" + language + ".json")
-        return try? Data(contentsOf: path)
-    }
-    
     private var languages: [String]? {
         guard let languages = Files.files("localization") else { return nil }
         return languages.map { $0.replacingOccurrences(of: ".json", with: "")}
     }
     
+    private static var data: Data? {
+        let path = Files.directory.appendingPathComponent("localization/" + current + ".json")
+        return try? Data(contentsOf: path)
+    }
+    
     @discardableResult
     public static func update() -> [String] {
         var updated: [String] = []
-        print(available)
         for language in available {
             guard let path = Bundle.main.path(forResource: language, ofType: "json"),
                   let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
@@ -36,12 +35,9 @@ public class Languages {
     
     init?() {
         if languages == nil { guard Files.folder("localization") else { return nil } }
-        if languages?.count == 0 { let languages = Languages.update();
-            print("languages (\(languages.joined(separator: ", "))) created") }
-        print("available languages: ", languages?.joined(separator: ", ") ?? "nil")
-        print(Self.current, read(Self.current)?.dict)
-        //guard let dictionary = read(Self.current)?.dict as? [String: String] else { fatalError() }
-        //Languages.dictionary = dictionary
+        if languages?.count == 0 { Languages.update() }
+        guard let dictionary = Languages.data?.dict as? [String: String] else { fatalError() }
+        Languages.dictionary = dictionary
     }
     
     public static var languages: [String]? { shared?.languages }
