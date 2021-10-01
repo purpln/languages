@@ -34,11 +34,20 @@ public class Languages {
         return updated
     }
     
+    public func changed() {
+        print("changed")
+        guard let dictionary = data?.dict else { return }
+        self.dictionary = dictionary
+    }
+    
     init?() {
         if languages == nil { guard Files.folder("localization") else { return nil } }
         if languages?.count == 0 { update() }
         guard let dictionary = data?.dict else { return nil }
         self.dictionary = dictionary
+        NotificationCenter.default.addObserver(forName: NSLocale.currentLocaleDidChangeNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.changed()
+        }
     }
     
     public var available: [String] { ["en", "ru"] }
@@ -48,6 +57,8 @@ public class Languages {
               languages.contains(language) else { return "en" }
         return language
     }
+    
+    deinit { NotificationCenter.default.removeObserver(self) }
 }
 
 private extension Data {
