@@ -36,6 +36,7 @@ public class Languages {
     
     init() {
         if languages == nil { _ = folder("localization"); print("folder localization created") }
+        print("count", languages?.count ?? "nil")
         if languages?.count == 0 { let languages = Languages.update();
             print("languages (\(languages.joined(separator: ", "))) created") }
         print("available languages: ", languages?.joined(separator: ", ") ?? "nil")
