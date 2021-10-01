@@ -36,7 +36,6 @@ public class Languages {
     
     init() {
         if languages == nil { _ = folder("localization"); print("folder localization created") }
-        print("count", languages?.count ?? "nil")
         if languages?.count == 0 { let languages = Languages.update();
             print("languages (\(languages.joined(separator: ", "))) created") }
         print("available languages: ", languages?.joined(separator: ", ") ?? "nil")
@@ -45,10 +44,10 @@ public class Languages {
     }
 }
 
-extension Languages {
-    open class var available: [String] { ["en", "ru"] }
-    open class var current: String { "en" }
-    public static var languages: [String]? { shared.languages }
+public extension Languages {
+    class var available: [String] { ["en", "ru"] }
+    class var current: String { "en" }
+    static var languages: [String]? { shared.languages }
 }
 
 private extension Languages {
