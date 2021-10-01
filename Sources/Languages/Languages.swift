@@ -15,13 +15,13 @@ public class Languages {
         return languages.map { $0.replacingOccurrences(of: ".json", with: "")}
     }
     
-    private static var data: Data? {
+    private var data: Data? {
         let path = Files.directory.appendingPathComponent("localization/" + current + ".json")
         return try? Data(contentsOf: path)
     }
     
     @discardableResult
-    public static func update() -> [String] {
+    public func update() -> [String] {
         var updated: [String] = []
         for language in available {
             guard let path = Bundle.main.path(forResource: language, ofType: "json"),
@@ -35,15 +35,13 @@ public class Languages {
     
     init?() {
         if languages == nil { guard Files.folder("localization") else { return nil } }
-        if languages?.count == 0 { Languages.update() }
-        print(languages, Languages.data?.dict)
-        guard let dictionary = Languages.data?.dict else { return nil }
+        if languages?.count == 0 { update() }
+        guard let dictionary = data?.dict else { return nil }
         self.dictionary = dictionary
     }
     
-    public static var languages: [String]? { shared?.languages }
-    public static var available: [String] { ["en", "ru"] }
-    public static var current: String {
+    public var available: [String] { ["en", "ru"] }
+    public var current: String {
         guard let language = Bundle.main.preferredLocalizations.first,
               let languages = languages,
               languages.contains(language) else { return "en" }
