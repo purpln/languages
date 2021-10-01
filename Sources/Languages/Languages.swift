@@ -39,6 +39,7 @@ public class Languages {
         if languages?.count == 0 { let languages = Languages.update();
             print("languages (\(languages.joined(separator: ", "))) created") }
         print("available languages: ", languages?.joined(separator: ", ") ?? "nil")
+        print(Self.current, read(Self.current)?.dict)
         guard let dictionary = read(Self.current)?.dict as? [String: String] else { fatalError() }
         Languages.dictionary = dictionary
     }
