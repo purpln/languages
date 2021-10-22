@@ -43,6 +43,7 @@ class Files {
     static func folder(_ folder: String) -> Bool {
         guard !exists(folder) else { return false }
         guard let _ = try? manager.createDirectory(atPath: url(folder).path, withIntermediateDirectories: true) else { return true }
+        print(exists(folder))
         return false
     }
     static func url(_ path: String) -> URL {
